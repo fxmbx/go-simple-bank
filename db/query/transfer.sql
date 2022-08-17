@@ -5,36 +5,17 @@ INSERT INTO transfers (
   amount
 ) VALUES (
   $1, $2, $3
-)
-RETURNING *;
+) RETURNING *;
 
--- name: GetTranserByID :one
+-- name: GetTransfer :one
 SELECT * FROM transfers
 WHERE id = $1 LIMIT 1;
 
--- name: ListTransfersByAccountFrom :many
+-- name: ListTransfers :many
 SELECT * FROM transfers
-WHERE from_account_id = $1
-ORDER BY id 
-LIMIT $2
-OFFSET $3;
-
--- name: ListTransfersByAccountTo :many
-SELECT * FROM transfers
-WHERE to_account_id = $1
-ORDER BY id 
-LIMIT $2
-OFFSET $3;
-
--- -- name: ListTransfers :many
--- SELECT * FROM transfers
--- WHERE 
---     from_account_id = $1 OR
---     to_account_id = $2
--- ORDER BY id
--- LIMIT $3
--- OFFSET $4;
-
--- name: DeleteTransfer :exec
-DELETE FROM transfers
-WHERE id = $1;
+WHERE 
+    from_account_id = $1 OR
+    to_account_id = $2
+ORDER BY id
+LIMIT $3
+OFFSET $4;
