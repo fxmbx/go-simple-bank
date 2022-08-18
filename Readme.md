@@ -14,6 +14,20 @@ postgres driver
 
 # go get github.com/lib/pq
 
-to check test
+to check test using read db
 
 # go get github.com/stretchr/testify/
+
+to test using mock db
+
+# go get github.com/golang/mock/mockgen@v1.6.0
+
+mockgen -destination db/mock/store.go github.com/fxmbx/go-simple-bank/db/sqlc Store
+
+gin for routing and some other things
+
+# go get -u github.com/gin-gonic/gin
+
+viper for reading and watching env variables
+
+# go get github.com/spf13/viper
