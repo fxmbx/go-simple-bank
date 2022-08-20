@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+	"time"
 
 	db "github.com/fxmbx/go-simple-bank/db/sqlc"
 	"github.com/fxmbx/go-simple-bank/utils"
@@ -13,6 +14,13 @@ type createUserRequest struct {
 	Email    string `json:"email" binding:"required,email"`
 	FullName string `json:"full_name" binding:"required"`
 	Password string `json:"password" binding:"required,min=6"`
+}
+type createUserResponse struct {
+	Username          string    `json:"username"`
+	FullName          string    `json:"full_name"`
+	Email             string    `json:"email"`
+	PasswordChangedAt time.Time `json:"password_changed_at"`
+	CreatedAt         time.Time `json:"created_at"`
 }
 
 func (server *Server) createUser(ctx *gin.Context) {
@@ -37,5 +45,12 @@ func (server *Server) createUser(ctx *gin.Context) {
 		errroHandler(ctx, err)
 		return
 	}
-	ctx.JSON(http.StatusOK, user)
+	response := createUserResponse{
+		Username:          user.Username,
+		FullName:          user.FullName,
+		Email:             user.FullName,
+		PasswordChangedAt: user.PasswordChangedAt,
+		CreatedAt:         user.CreatedAt,
+	}
+	ctx.JSON(http.StatusOK, response)
 }
