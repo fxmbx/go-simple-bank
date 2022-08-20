@@ -21,6 +21,7 @@ func NewServer(store db.Store) *Server {
 	//regitering custome validator with gin
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
 		v.RegisterValidation("currency", validCurrency)
+		v.RegisterValidation("customemail", validEmail)
 	}
 
 	//add routes to the router
@@ -31,6 +32,9 @@ func NewServer(store db.Store) *Server {
 
 	//transfers
 	router.POST("/api/transfer", server.createTransfer)
+
+	//users
+	router.POST("/api/users", server.createUser)
 
 	server.router = router
 	return server

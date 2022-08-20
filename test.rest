@@ -5,3 +5,13 @@ content-type: application/json
     "owner": "afasle",
     "currency": "CAD"
 }
+
+POST http://localhost:8080/api/users HTTP/1.1
+content-type: application/json
+
+{
+    "username" :"stfunbi",
+    "email":"funbi@test.com",
+    "password":"password",
+    "full_name":"John Belliion"
+}

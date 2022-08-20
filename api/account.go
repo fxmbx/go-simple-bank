@@ -33,7 +33,7 @@ func (server *Server) createAccount(ctx *gin.Context) {
 	if err != nil {
 		errroHandler(ctx, err)
 
-		// ctx.JSON(http.StatusInternalServerError, errorResponse("error creating account 🎣", err))
+		ctx.JSON(http.StatusInternalServerError, errorResponse("error creating account 🎣", err))
 		return
 	}
 	ctx.JSON(http.StatusOK, account)

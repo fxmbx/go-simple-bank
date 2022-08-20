@@ -14,6 +14,12 @@ func errroHandler(ctx *gin.Context, err error) {
 		switch pqErr.Code.Name() {
 		case "foreign_key_violation", "unique_violation":
 			ctx.JSON(http.StatusForbidden, errorResponse("Unique key viloation🎣", err))
+			return
+		default:
+			ctx.JSON(http.StatusInternalServerError, errorResponse("🎣", err))
+			return
 		}
 	}
+	ctx.JSON(http.StatusBadRequest, errorResponse("🎣", err))
+
 }
