@@ -72,6 +72,21 @@ func TestGetAccounAPI(t *testing.T) {
 				// requireBodyMatchAccount(t, recorder.Body, account)
 			},
 		},
+		{
+			name:      "Invalid Id",
+			accountId: 0,
+			buildStubs: func(store *mockdb.MockStore) {
+				//build studs for this mock store
+				store.EXPECT().
+					GetAccountByID(gomock.Any(), gomock.Any()).
+					Times(0)
+
+			},
+			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusBadRequest, recorder.Code)
+				// requireBodyMatchAccount(t, recorder.Body, account)
+			},
+		},
 	}
 	for i := range testCases {
 		tc := testCases[i]
@@ -92,7 +107,7 @@ func TestGetAccounAPI(t *testing.T) {
 			server := NewServer(store)
 			receorder := httptest.NewRecorder()
 
-			url := fmt.Sprintf("/api/accounts/%d", account.ID)
+			url := fmt.Sprintf("/api/accounts/%d", tc.accountId)
 			request, err := http.NewRequest(http.MethodGet, url, nil)
 			require.NoError(t, err)
 			server.router.ServeHTTP(receorder, request)
