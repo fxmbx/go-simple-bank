@@ -31,3 +31,15 @@ gin for routing and some other things
 viper for reading and watching env variables
 
 # go get github.com/spf13/viper
+
+uuid for the tokens
+
+# go get github.com/google/uuid
+
+jwt
+
+# github.com/dgrijalva/jwt-go
+
+paseto
+
+# go get -u github.com/o1egl/paseto
