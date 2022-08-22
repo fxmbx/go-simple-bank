@@ -2,14 +2,16 @@ package api
 
 import (
 	"database/sql"
+	"errors"
 	"net/http"
 
 	db "github.com/fxmbx/go-simple-bank/db/sqlc"
+	token "github.com/fxmbx/go-simple-bank/token"
 	"github.com/gin-gonic/gin"
 )
 
 type createAccountRequest struct {
-	Owner    string `json:"owner" binding:"required"`
+	// Owner    string `json:"owner" binding:"required"`
 	Currency string `json:"currency" binding:"required,currency"`
 }
 
@@ -23,8 +25,9 @@ func (server *Server) createAccount(ctx *gin.Context) {
 		errroHandler(ctx, err)
 		return
 	}
+	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
 	arg := db.CreateAccountParams{
-		Owner:    req.Owner,
+		Owner:    authPayload.Username,
 		Currency: req.Currency,
 		Balance:  0,
 	}
@@ -49,6 +52,7 @@ func (server *Server) getAccount(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse("error binging req to uri 🎣", err))
 		return
 	}
+
 	account, err := server.store.GetAccountByID(ctx, req.ID)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -60,7 +64,12 @@ func (server *Server) getAccount(ctx *gin.Context) {
 		return
 	}
 	// account = db.Account{}
-
+	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+	if account.Owner != authPayload.Username {
+		err = errors.New("Account doesn't belong to you")
+		ctx.JSON(http.StatusUnauthorized, errorResponse("🎣", err))
+		return
+	}
 	ctx.JSON(http.StatusOK, account)
 }
 
@@ -75,7 +84,9 @@ func (server *Server) getAccounts(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse("error binging req to query 🎣", err))
 		return
 	}
+	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
 	arg := db.ListAccountsParams{
+		Owner:  authPayload.Username,
 		Limit:  req.PageSize,
 		Offset: (req.PageID - 1) * req.PageSize,
 	}
