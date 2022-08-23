@@ -43,3 +43,7 @@ jwt
 paseto
 
 # go get -u github.com/o1egl/paseto
+
+# to load environment variable into the current shell environment
+
+source app.env
