@@ -12,6 +12,8 @@ import (
 
 func main() {
 	config, err := utils.LoadConfig(".")
+
+	// doc
 	if err != nil {
 		log.Println("cannot load configurations 😞")
 		log.Fatal(err)

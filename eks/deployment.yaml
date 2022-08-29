@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simple-bank-api-deployment
+  labels:
+    app: simple-bank-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: simple-bank-api
+  template:
+    metadata:
+      labels:
+        app: simple-bank-api
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/arch
+                    operator: In
+                    values:
+                      - amd64
+                      - arm64
+      containers:
+        - name: nginx
+          image: 215491344366.dkr.ecr.eu-west-2.amazonaws.com/simplebank:6cc7a2e44fc69b00221b9fec5f8fddc769067e6a
+          ports:
+            - name: http
+              containerPort: 8080
+          imagePullPolicy: IfNotPresent
+      nodeSelector:
+        kubernetes.io/os: linux
