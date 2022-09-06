@@ -10,12 +10,14 @@ import (
 	"net/http/httptest"
 	"reflect"
 	"testing"
+	"time"
 
 	mockdb "github.com/fxmbx/go-simple-bank/db/mock"
 	db "github.com/fxmbx/go-simple-bank/db/sqlc"
 	"github.com/fxmbx/go-simple-bank/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
+	"github.com/google/uuid"
 	"github.com/lib/pq"
 	"github.com/stretchr/testify/require"
 )
@@ -49,6 +51,8 @@ func EqCreateUserParams(arg db.CreateUserParams, password string) gomock.Matcher
 }
 func TestCreateUserAPI(t *testing.T) {
 	user, password := randomUser(t)
+	// require.WithinDuration(t, time.Minute, session.ExpiresAt)
+	// require.WithinDuration(t, session.ExpiresAt, time.Now().Add(time.Minute*3), time.Second)
 
 	testCases := []struct {
 		name          string
@@ -74,6 +78,7 @@ func TestCreateUserAPI(t *testing.T) {
 					CreateUser(gomock.Any(), EqCreateUserParams(arg, password)).
 					Times(1).
 					Return(user, nil)
+
 			},
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusOK, recorder.Code)
@@ -199,6 +204,8 @@ func TestCreateUserAPI(t *testing.T) {
 func TestLoginUser(t *testing.T) {
 	user, password := randomUser(t)
 
+	session, _ := createRandonSession(t, user)
+	require.NotEmpty(t, session)
 	testCases := []struct {
 		name          string
 		body          gin.H
@@ -213,7 +220,16 @@ func TestLoginUser(t *testing.T) {
 			},
 			builStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().GetUser(gomock.Any(), gomock.Eq(user.Username)).Times(1).Return(user, nil)
-
+				// sessionarg := db.CreateSessionParams{
+				// 	ID:           session.ID,
+				// 	Username:     session.Username,
+				// 	ExpiresAt:    session.ExpiresAt,
+				// 	RefreshToken: session.RefreshToken,
+				// 	ClientIp:     session.ClientIp,
+				// 	UserAgent:    session.UserAgent,
+				// 	IsBlocked:    session.IsBlocked,
+				// }
+				store.EXPECT().CreateSession(gomock.Any(), gomock.Any()).Times(1).Return(session, nil)
 				// store.EXPECT().C
 			},
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
@@ -261,6 +277,23 @@ func randomUser(t *testing.T) (user db.User, password string) {
 	return
 }
 
+func createRandonSession(t *testing.T, user db.User) (db.Session, error) {
+
+	ID, err := uuid.NewRandom()
+	require.NoError(t, err)
+	session := db.Session{
+		ID:           ID,
+		Username:     user.Username,
+		ExpiresAt:    time.Now().Add(time.Minute * 3),
+		IsBlocked:    false,
+		RefreshToken: utils.RandomString(32),
+		ClientIp:     "",
+		UserAgent:    "",
+	}
+
+	return session, nil
+
+}
 func requireBodyMatchUser(t *testing.T, body *bytes.Buffer, user db.User) {
 	data, err := ioutil.ReadAll(body)
 	require.NoError(t, err)

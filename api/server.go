@@ -32,6 +32,7 @@ func NewServer(config utils.Config, store db.Store) (*Server, error) {
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
 		v.RegisterValidation("currency", validCurrency)
 		v.RegisterValidation("customemail", validEmail)
+		v.RegisterValidation("password", validPassword)
 	}
 
 	// //add routes to the router
@@ -68,6 +69,8 @@ func (server *Server) setUpRouter() {
 	router.POST("/api/users", server.createUser)
 	router.POST("/api/users/login", server.loginUser)
 
+	//refreshToken
+	router.POST("/api/token/refreshtoken", server.renewAccessToken)
 	//authRoutes to add middleware
 	authRoutes := router.Group("/").Use(authMiddleware(server.tokenMaker))
 	//add routes to the router

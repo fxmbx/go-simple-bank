@@ -42,6 +42,18 @@ func (server *Server) createAccount(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, account)
 }
 
+// SignUp godoc
+// @Summary is the endpoint for user signup.
+// A user send a his/her phone number and email to this endpoint to receive token
+// @Description SignUp user with email or name
+// @Accept  json
+// @Produce  json
+// @Param  SingUpDetails body SignUpData true "accounts"
+// @Success 200 {object} utils.HTTPRes
+// @Failure 400 {object} utils.HTTPRes
+// @Failure 404 {object} utils.HTTPRes
+// @Failure 500 {object} utils.HTTPRes
+// @Router /v2/signup [post]
 type GetAccountRequest struct {
 	ID int64 `uri:"id" binding:"required,min=1"`
 }

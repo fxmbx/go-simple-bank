@@ -27,3 +27,17 @@ var validEmail validator.Func = func(fl validator.FieldLevel) bool {
 	}
 	return false
 }
+
+var validPassword validator.Func = func(fl validator.FieldLevel) bool {
+	if password, ok := fl.Field().Interface().(string); ok {
+		matched, err := regexp.Match(`q`, []byte(password))
+		if err != nil {
+			return false
+		}
+		if !matched {
+			return false
+		}
+		return true
+	}
+	return false
+}
