@@ -37,3 +37,16 @@ go get -u github.com/o1egl/paseto
 
 to load environment variable into the current shell environment
 source app.env
+
+dbdocs
+npm i -g dbdocs
+
+to generate db doc user;
+dbdocs build docs/db.dbml
+[https://dbdocs.io/funbiolaore/simple_bank]
+dbdocs password --set <password> --project <project name>
+
+to generate scehma code using dbml
+npm i -g @dbml/cli
+dbml2sql --<db engine> -o <schemal location> <.dbml file locaction>
+dbml2sql --postgres -o docs/schema docs/db.dbml
