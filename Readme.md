@@ -50,3 +50,9 @@ to generate scehma code using dbml
 npm i -g @dbml/cli
 dbml2sql --<db engine> -o <schemal location> <.dbml file locaction>
 dbml2sql --postgres -o docs/schema docs/db.dbml
+
+evans
+https://github.com/ktr0731/evans
+
+to start:
+evans --host localhost --port 8081 -r repl

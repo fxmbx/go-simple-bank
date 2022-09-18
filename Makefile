@@ -40,4 +40,13 @@ db_docs:
 db_schema:
 	dbml2sql --postgres -o docs/schema.sql docs/db.dbml
 
-.PHONY: postgres createdb dropdb migrateup migratedown migrateup1 migratedown1 sqlc server mock builddocker dockerrun db_docs db_schema
+proto:
+	rm -f pb/*.go
+	protoc --proto_path=proto --go_out=pb --go_opt=paths=source_relative \
+		--go-grpc_out=pb --go-grpc_opt=paths=source_relative \
+		proto/*.proto
+
+evans:
+	evans --host localhost --port 8081 -r repl
+	
+.PHONY: postgres createdb dropdb migrateup migratedown migrateup1 migratedown1 sqlc server mock builddocker dockerrun db_docs db_schema proto
